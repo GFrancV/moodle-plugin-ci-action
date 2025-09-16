@@ -38,6 +38,7 @@ runs:
         composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
         echo $(cd ci/bin; pwd) >> $GITHUB_PATH
         echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
+      shell: bash
 
     - name: Run moodle-plugin-ci install
       run: |
@@ -45,31 +46,39 @@ runs:
       env:
         DB: ${{ inputs.database }}
         MOODLE_BRANCH: ${{ inputs.moodle-branch }}
+      shell: bash
 
     - name: PHP Lint
       if: ${{ always() }}
       run: moodle-plugin-ci phplint
+      shell: bash
 
     - name: PHP Mess Detector
       if: ${{ always() }}
       run: moodle-plugin-ci phpmd
+      shell: bash
 
     - name: Moodle Code Checker
       if: ${{ always() }}
       run: moodle-plugin-ci codechecker --max-warnings 0
+      shell: bash
 
     - name: Moodle PHPDoc Checker
       if: ${{ always() }}
       run: moodle-plugin-ci phpdoc
+      shell: bash
 
     - name: Validating
       if: ${{ always() }}
       run: moodle-plugin-ci validate
+      shell: bash
 
     - name: PHPUnit tests
       if: ${{ always() }}
       run: moodle-plugin-ci phpunit --fail-on-warning
+      shell: bash
 
     - name: Behat features
       if: ${{ always() }}
       run: moodle-plugin-ci behat --profile chrome --auto-rerun 0
+      shell: bash
