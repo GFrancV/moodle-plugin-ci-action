@@ -1,0 +1,75 @@
+name: 'Moodle Plugin CI'
+author: 'GFrancV'
+description: 'GitHub Action for Moodle Plugin Continuous Integration. Run moodle-plugin-ci for Moodle plugins with PHP & DB matrix.'
+branding:
+  color: 'yellow'
+  icon: 'check-circle'
+
+inputs:
+  php-version:
+    description: 'Version of PHP to use'
+    required: false
+    default: '8.3'
+  moodle-branch:
+    description: 'Moodle branch to test against'
+    required: false
+    default: 'MOODLE_500_STABLE'
+  database:
+    description: 'Database to use: pgsql or mariadb'
+    required: false
+    default: 'pgsql'
+  plugin-path:
+    description: 'Path to the Moodle plugin to test'
+    required: false
+    default: './'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup PHP ${{ inputs.php-version }}
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+        ini-values: max_input_vars=5000
+        coverage: none
+
+    - name: Install moodle-plugin-ci
+      run: |
+        composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
+        echo $(cd ci/bin; pwd) >> $GITHUB_PATH
+        echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
+
+    - name: Run moodle-plugin-ci install
+      run: |
+        moodle-plugin-ci install --plugin ${{ inputs.plugin-path }} --db-host=127.0.0.1
+      env:
+        DB: ${{ inputs.database }}
+        MOODLE_BRANCH: ${{ inputs.moodle-branch }}
+
+    - name: PHP Lint
+      if: ${{ always() }}
+      run: moodle-plugin-ci phplint
+
+    - name: PHP Mess Detector
+      if: ${{ always() }}
+      run: moodle-plugin-ci phpmd
+
+    - name: Moodle Code Checker
+      if: ${{ always() }}
+      run: moodle-plugin-ci codechecker --max-warnings 0
+
+    - name: Moodle PHPDoc Checker
+      if: ${{ always() }}
+      run: moodle-plugin-ci phpdoc
+
+    - name: Validating
+      if: ${{ always() }}
+      run: moodle-plugin-ci validate
+
+    - name: PHPUnit tests
+      if: ${{ always() }}
+      run: moodle-plugin-ci phpunit --fail-on-warning
+
+    - name: Behat features
+      if: ${{ always() }}
+      run: moodle-plugin-ci behat --profile chrome --auto-rerun 0
