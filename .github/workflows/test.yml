@@ -58,7 +58,7 @@ jobs:
           path: plugin
 
       - name: Run Moodle CI on external repo
-        uses: your-namespace/moodle-plugin-ci-action@v1
+        uses: GFrancV/moodle-plugin-ci-action@v1
         with:
           php-version: ${{ matrix.php }}
           moodle-branch: ${{ matrix.moodle }}
