@@ -1,0 +1,67 @@
+name: Test Moodle Plugin CI Action
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'releases/*'
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 3
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 3
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.2'
+            moodle: 'MOODLE_500_STABLE'
+            db: pgsql
+          - php: '8.3'
+            moodle: 'MOODLE_500_STABLE'
+            db: mariadb
+
+    name: Moodle CI PHP ${{ matrix.php }} Moodle ${{ matrix.moodle }} DB ${{ matrix.db }}
+
+    steps:
+      - name: Checkout plugin code
+        uses: actions/checkout@v4
+        with:
+          repository: GFrancV/moodle-mod_viewer3d
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: plugin
+
+      - name: Run Moodle CI on external repo
+        uses: your-namespace/moodle-plugin-ci-action@v1
+        with:
+          php-version: ${{ matrix.php }}
+          moodle-branch: ${{ matrix.moodle }}
+          database: ${{ matrix.db }}
+          plugin-path: ./plugin
+
