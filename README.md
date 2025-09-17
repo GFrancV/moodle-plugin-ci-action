@@ -2,6 +2,10 @@
 
 # Moodle Plugin CI Action
 
+[![Test](https://img.shields.io/github/actions/workflow/status/GFrancV/moodle-plugin-ci-action/test.yml?style=for-the-badge&label=Test&logo=github)](https://GitHub.com/GFrancV/moodle-plugin-ci-action/tags/)
+[![GitHub tag](https://img.shields.io/github/tag/GFrancV/moodle-plugin-ci-action.svg?style=for-the-badge&logo=github)](https://GitHub.com/GFrancV/moodle-plugin-ci-action/tags/)
+![Moodle](https://img.shields.io/badge/^4.4-1000?style=for-the-badge&logo=Moodle&logoColor=ffffff&labelColor=gray&color=f98012&label=Moodle)
+
 <a href="#description">Description</a>
 •
 <a href="#params">Params</a>
@@ -12,6 +16,7 @@
 •
 <a href="#license">License</a>
 </div>
+
 
 ## Description
 
@@ -118,4 +123,4 @@ This action is intended to be used within a GitHub Actions workflow in your plug
 
 ## License
 
-The scripts and documentation in this project are released under the MIT License
+The scripts and documentation in this project are released under the [MIT License](LICENSE)
