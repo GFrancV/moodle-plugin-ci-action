@@ -3,7 +3,7 @@
 # Moodle Plugin CI Action
 
 [![Test](https://img.shields.io/github/actions/workflow/status/GFrancV/moodle-plugin-ci-action/test.yml?style=for-the-badge&label=Test&logo=github)](https://GitHub.com/GFrancV/moodle-plugin-ci-action/tags/)
-[![GitHub tag](https://img.shields.io/github/tag/GFrancV/moodle-plugin-ci-action.svg?style=for-the-badge&logo=github)](https://GitHub.com/GFrancV/moodle-plugin-ci-action/tags/)
+[![GitHub tag](https://img.shields.io/github/v/tag/GFrancV/moodle-plugin-ci-action?style=for-the-badge&logo=github)](https://GitHub.com/GFrancV/moodle-plugin-ci-action/tags)
 ![Moodle](https://img.shields.io/badge/^4.4-1000?style=for-the-badge&logo=Moodle&logoColor=ffffff&labelColor=gray&color=f98012&label=Moodle)
 
 <a href="#description">Description</a>
@@ -63,7 +63,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Moodle CI PHP 8.3 Moodle 5.0
-        uses: gfrancv/moodle-plugin-ci-action@v1
+        uses: gfrancv/moodle-plugin-ci-action@v1.1.0
         with:
           php-version: 8.3
           moodle-branch: MOODLE_500_STABLE
@@ -100,7 +100,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Moodle CI PHP 8.3 Moodle 5.0 DB mariadb
-        uses: gfrancv/moodle-plugin-ci-action@v1
+        uses: gfrancv/moodle-plugin-ci-action@v1.1.0
         with: 
           php-version: 8.3
           moodle-branch: MOODLE_500_STABLE
@@ -138,7 +138,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Moodle CI PHP ${{ matrix.php }} Moodle ${{ matrix.moodle }} DB ${{ matrix.db }}
-        uses: gfrancv/moodle-plugin-ci-action@v1
+        uses: gfrancv/moodle-plugin-ci-action@v1.1.0
         with:
           php-version: ${{ matrix.php }}
           moodle-branch: ${{ matrix.moodle }}
