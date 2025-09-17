@@ -68,7 +68,7 @@ jobs:
           plugin-path: ./plugin
 
   negative-tests:
-    runs-on: ubuntu-22.04   
+    runs-on: ubuntu-22.04
 
     services:
       postgres:
