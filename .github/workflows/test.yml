@@ -100,7 +100,7 @@ jobs:
 
       - name: Verify it failed
         run: |
-          if [ "${{ job.status }}" = "success" ]; then
+          if [ "${{ steps.run_ci.outcome }}" = "success" ]; then
             echo "Expected failure but the action succeeded"
             exit 1
           else
