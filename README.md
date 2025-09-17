@@ -43,28 +43,39 @@ Executes a comprehensive suite of checks:
 | --- | --- | --- | --- |
 | php-version | Version of PHP to use | `false` | 8.3 |
 | moodle-branch | Moodle branch to test against | `false` | MOODLE_500_STABLE |
-| database | Database to use: pgsql or mariadb | `false` | pgsql |
+| database | Database to use: pgsql or mariadb | `false` | null |
 | plugin-path | Path to the Moodle plugin to test | `false` | ./ |
 
 ## Usage
 
 ### Basic usage (without a database)
 
+This assumes that the plugin code is located in the root directory. For this, the action [checkout@v4](https://github.com/marketplace/actions/checkout) is used to clone the current repository.
+
 ```yml
-name: Test for Moodle plugin in version 5.0 to php 8.3
+name: Test Moodle plugin (no database)
 
 jobs:
   test:
     runs-on: ubuntu-22.04
     steps:
-      - name: Moodle CI PHP 8.3 Moodle 5.0 DB pgsql
+      - name: Checkout action code
+        uses: actions/checkout@v4
+
+      - name: Moodle CI PHP 8.3 Moodle 5.0
         uses: gfrancv/moodle-plugin-ci-action@v1
+        with:
+          php-version: 8.3
+          moodle-branch: MOODLE_500_STABLE
 ```
+> Note: It is important to checkout your plugin repository before running the action. The action needs access to the plugin files, so make sure to use actions/checkout@v4 (or a similar checkout step) to clone your repository into the workflow workspace.
 
 ### Basic usage (with database)
 
+This assumes that the plugin code is located in the root directory.
+
 ```yml
-name: Test for Moodle plugin in version 5.0 to php 8.3
+name: Test Moodle plugin (with database)
 
 jobs:
   test:
@@ -77,7 +88,7 @@ jobs:
           POSTGRES_HOST_AUTH_METHOD: trust
         ports:
           - 5432:5432
-      # Or .
+      # Or 
       mariadb:
         image: mariadb:10.11
         env:
@@ -85,28 +96,47 @@ jobs:
         ports:
           - 3306:3306
     steps:
-      - name: Moodle CI PHP 8.3 Moodle 5.0 DB pgsql
+      - name: Checkout action code
+        uses: actions/checkout@v4
+
+      - name: Moodle CI PHP 8.3 Moodle 5.0 DB mariadb
         uses: gfrancv/moodle-plugin-ci-action@v1
+        with: 
+          php-version: 8.3
+          moodle-branch: MOODLE_500_STABLE
+          database: mariadb
 ```
 
 ### Advanced use for multiple versions
+
 ```yml
-name: Test for Moodle plugin
+name: Test Moodle plugin (matrix)
 
 jobs:
   test:
     runs-on: ubuntu-22.04
-
+    services: 
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+        ports:
+          - 3306:3306
+          
     strategy:
       matrix:
         include:
           - php: '8.2'
             moodle: 'MOODLE_500_STABLE'
-            db: pgsql
+            db: mariadb
           - php: '8.3'
             moodle: 'MOODLE_500_STABLE'
             db: mariadb
+
     steps:
+      - name: Checkout action code
+        uses: actions/checkout@v4
+
       - name: Moodle CI PHP ${{ matrix.php }} Moodle ${{ matrix.moodle }} DB ${{ matrix.db }}
         uses: gfrancv/moodle-plugin-ci-action@v1
         with:
@@ -120,6 +150,8 @@ jobs:
 Ensure that your plugin repository includes a `version.php` file with the appropriate `$plugin->supported` range to align with the Moodle versions being tested.
 
 This action is intended to be used within a GitHub Actions workflow in your plugin repository.
+
+It is important to checkout your plugin repository before running the action. The action needs access to the plugin files, so make sure to use actions/checkout@v4 (or a similar checkout step) to clone your repository into the workflow workspace.
 
 ## License
 
