@@ -1,6 +1,6 @@
 <?php
 
-// Sintaxis inválida para disparar error.
+// Invalid syntax to trigger error.
 function my_broken_function( {
     echo "missing parenthesis";
 }
