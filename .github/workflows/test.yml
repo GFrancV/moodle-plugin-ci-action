@@ -48,6 +48,9 @@ jobs:
 
     name: Moodle CI PHP ${{ matrix.php }} Moodle ${{ matrix.moodle }} DB ${{ matrix.db }}
     steps:
+      - name: Checkout action code
+        uses: actions/checkout@v4
+
       - name: Checkout plugin code
         uses: actions/checkout@v4
         with:
@@ -66,10 +69,10 @@ jobs:
 
   negative-tests:
     runs-on: ubuntu-22.04   
-    
+
     name: Test failure case
     steps:
-      - name: Checkout plugin code
+      - name: Checkout action code
         uses: actions/checkout@v4
 
       - name: Run Moodle Plugin CI (expecting failure)
@@ -78,7 +81,7 @@ jobs:
           php-version: 8.3
           moodle-branch: MOODLE_500_STABLE
           database: pgsql
-          plugin-path: ./tests/fixtures/invaliud
+          plugin-path: ./tests/fixtures/invalid
         continue-on-error: true
 
       - name: Verify it failed
