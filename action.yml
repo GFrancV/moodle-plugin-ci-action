@@ -2,7 +2,7 @@ name: 'Moodle Plugin CI'
 author: 'GFrancV'
 description: 'GitHub Action for Moodle Plugin Continuous Integration. Run moodle-plugin-ci for Moodle plugins with PHP & DB matrix.'
 branding:
-  color: 'yellow'
+  color: 'green'
   icon: 'check-circle'
 
 inputs:
@@ -17,7 +17,7 @@ inputs:
   database:
     description: 'Database to use: pgsql or mariadb'
     required: false
-    default: 'pgsql'
+    default: null
   plugin-path:
     description: 'Path to the Moodle plugin to test'
     required: false
@@ -42,7 +42,13 @@ runs:
 
     - name: Run moodle-plugin-ci install
       run: |
-        moodle-plugin-ci install --plugin ${{ inputs.plugin-path }} --db-host=127.0.0.1
+        if [ "${{ inputs.database }}" != "null" ]; then
+          echo "Running with database ${{ inputs.database }}"
+          moodle-plugin-ci install --plugin ${{ inputs.plugin-path }} --db-host=127.0.0.1
+        else
+          echo "Running without database"
+          moodle-plugin-ci install --plugin ${{ inputs.plugin-path }}
+        fi
       env:
         DB: ${{ inputs.database }}
         MOODLE_BRANCH: ${{ inputs.moodle-branch }}
