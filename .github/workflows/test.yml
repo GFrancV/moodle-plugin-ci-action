@@ -7,7 +7,7 @@ on:
       - 'releases/*'
 
 jobs:
-  test:
+  positive-tests:
     runs-on: ubuntu-22.04
 
     services:
@@ -47,8 +47,10 @@ jobs:
             db: mariadb
 
     name: Moodle CI PHP ${{ matrix.php }} Moodle ${{ matrix.moodle }} DB ${{ matrix.db }}
-
     steps:
+      - name: Checkout action code
+        uses: actions/checkout@v4
+
       - name: Checkout plugin code
         uses: actions/checkout@v4
         with:
@@ -58,10 +60,50 @@ jobs:
           path: plugin
 
       - name: Run Moodle CI on external repo
-        uses: GFrancV/moodle-plugin-ci-action@main
+        uses: ./ # Use the local action
         with:
           php-version: ${{ matrix.php }}
           moodle-branch: ${{ matrix.moodle }}
           database: ${{ matrix.db }}
           plugin-path: ./plugin
+
+  negative-tests:
+    runs-on: ubuntu-22.04
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 3
+
+    name: Test failure case
+    steps:
+      - name: Checkout action code
+        uses: actions/checkout@v4
+
+      - name: Run Moodle Plugin CI (expecting failure)
+        uses: ./ # Use the local action
+        with:
+          php-version: 8.3
+          moodle-branch: MOODLE_500_STABLE
+          database: pgsql
+          plugin-path: ./tests/fixtures/invalid
+        continue-on-error: true
+
+      - name: Verify it failed
+        run: |
+          if [ "${{ steps.run_ci.outcome }}" = "success" ]; then
+            echo "Expected failure but the action succeeded"
+            exit 1
+          else
+            echo "Action failed as expected"
+          fi
 
