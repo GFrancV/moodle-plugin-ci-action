@@ -42,7 +42,7 @@ runs:
 
     - name: Run moodle-plugin-ci install
       run: |
-        if [ -n "${{ inputs.database }}" ]; then
+        if [ "${{ inputs.database }}" != "null" ]; then
           echo "Running with database ${{ inputs.database }}"
           moodle-plugin-ci install --plugin ${{ inputs.plugin-path }} --db-host=127.0.0.1
         else
